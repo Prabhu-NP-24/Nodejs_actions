@@ -8,11 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
     # to run in different operating systems
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -34,6 +35,12 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         languages: "java"
+    # Check if the CodeQL scans is a success or not
+    - name: Check CodeQL results
+      if: ${{ failure() }}
+      run: |
+        echo "CodeQL analysis failed!"
+    # Send notification to the team or take other corrective action
     - name: Upload CodeQL results
       uses: github/codeql-action/upload-results@v2
       
