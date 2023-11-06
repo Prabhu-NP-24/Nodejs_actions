@@ -31,11 +31,11 @@ jobs:
 
     # Run a CodeQL analysis on the code and upload the results to the security tab          
     - name: Run CodeQL analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         languages: "java"
     - name: Upload CodeQL results
-      uses: github/codeql-action/upload-results@v3
+      uses: github/codeql-action/upload-results@v2
       
     # step to check if the build has succeeded or failed.
     - name: Inform on Failure
