@@ -33,7 +33,7 @@ jobs:
     - name: Run CodeQL analysis
       uses: github/codeql-action/analyze@v3
       with:
-        languages: [java]
+        languages: "java"
     - name: Upload CodeQL results
       uses: github/codeql-action/upload-results@v3
       
