@@ -8,12 +8,12 @@ on:
 
 jobs:
   build:
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     # to run in different operating systems
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    # runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
