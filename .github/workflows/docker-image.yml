@@ -1,50 +1,86 @@
-name: Docker Image CI
+# name: Docker Image CI
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     # to run in different operating systems
+#     strategy:
+#       matrix:
+#         os: [ubuntu-latest, windows-latest, macos-latest]
+#     # runs-on: ${{ matrix.os }}
+#     steps:
+#     - name: Checkout Repository
+#       uses: actions/checkout@v3
+#     # - name: Build the Docker image
+#     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+#     - name: Build and Push Docker Image
+#       uses: mr-smithers-excellent/docker-build-push@v4
+#       with:
+#         image: reddeadred/github_java
+#         registry: docker.io
+#         username: ${{ secrets.DOCKER_USERNAME }}
+#         password: ${{ secrets.DOCKER_PASSWORD }}
+#         tags: |
+#           latest
+#           ${{ github.sha }}
+
+#     # # Run a CodeQL analysis on the code and upload the results to the security tab          
+#     # - name: Run CodeQL analysis
+#     #   uses: github/codeql-action/analyze@v2
+#     #   with:
+#     #     languages: "java"
+#     # # Check if the CodeQL scans is a success or not
+#     # - name: Check CodeQL results
+#     #   if: ${{ failure() }}
+#     #   run: |
+#     #     echo "CodeQL analysis failed!"
+#     # # Send notification to the team or take other corrective action
+#     # - name: Upload CodeQL results
+#     #   uses: github/codeql-action/upload-results@v2
+      
+#     # step to check if the build has succeeded or failed.
+#     - name: Inform on Failure
+#       if: failure()
+#       run: echo "The Docker build or push step failed. Check the workflow logs for details."
+
+name: CodeQL
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+  schedule:
+    - cron: '56 5 * * 1'
+  workflow_call:
 
 jobs:
-  build:
+  analyze:
+    name: Analyze
     runs-on: ubuntu-latest
-    # to run in different operating systems
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    # runs-on: ${{ matrix.os }}
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-    # - name: Build the Docker image
-    #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-    - name: Build and Push Docker Image
-      uses: mr-smithers-excellent/docker-build-push@v4
-      with:
-        image: reddeadred/github_java
-        registry: docker.io
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: |
-          latest
-          ${{ github.sha }}
+        language:
+          - javascript
 
-    # # Run a CodeQL analysis on the code and upload the results to the security tab          
-    # - name: Run CodeQL analysis
-    #   uses: github/codeql-action/analyze@v2
-    #   with:
-    #     languages: "java"
-    # # Check if the CodeQL scans is a success or not
-    # - name: Check CodeQL results
-    #   if: ${{ failure() }}
-    #   run: |
-    #     echo "CodeQL analysis failed!"
-    # # Send notification to the team or take other corrective action
-    # - name: Upload CodeQL results
-    #   uses: github/codeql-action/upload-results@v2
-      
-    # step to check if the build has succeeded or failed.
-    - name: Inform on Failure
-      if: failure()
-      run: echo "The Docker build or push step failed. Check the workflow logs for details."
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v1
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
